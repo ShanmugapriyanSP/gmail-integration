@@ -6,6 +6,13 @@ max_email_count: 100
 google:
   token_file: "conf/token.json"
   credential_file: "conf/credentials.json"
-  redirect_port_number: 53669
+  redirect_port: 53669
   scopes:
     - https://www.googleapis.com/auth/gmail.readonly
+
+# database
+database:
+  name: postgres
+  host: 127.0.0.1
+  port: 5432
+  user: postgres

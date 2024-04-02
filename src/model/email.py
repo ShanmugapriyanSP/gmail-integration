@@ -1,9 +1,12 @@
+from utils.generic import GenericUtils
+
 
 class Email:
 
     _sender: str
     _subject: str
     _received_date: str
+    _received_timestamp: int
     _message_body: str
 
     @property
@@ -28,7 +31,15 @@ class Email:
 
     @received_date.setter
     def received_date(self, received_date):
-        self._received_date = received_date
+        self._received_date = GenericUtils.format_date(received_date)
+
+    @property
+    def received_timestamp(self):
+        return self._received_timestamp
+
+    @received_timestamp.setter
+    def received_timestamp(self, timestamp):
+        self._received_timestamp = timestamp
 
     @property
     def message_body(self):

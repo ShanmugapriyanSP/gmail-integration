@@ -1,13 +1,21 @@
 import psycopg2
 
+from config import Config
 from model.email import Email
 
 
-class PostgresManager:
+class PostgreSqlManager:
 
-    def __init__(self, host, port, database, user, password):
-        self.connection = psycopg2.connect(host=host, port=port, database=database, user=user, password=password)
+    def __init__(self, config_vars: Config):
+        self.connection = psycopg2.connect(
+            host=config_vars.db_host,
+            port=config_vars.db_port,
+            database=config_vars.db_name,
+            user=config_vars.db_user,
+            password=config_vars.db_password
+        )
         self.cursor = self.connection.cursor()
+        self.create_table()
 
     def create_table(self):
         self.cursor.execute("""
@@ -15,7 +23,7 @@ class PostgresManager:
                 id SERIAL PRIMARY KEY,
                 sender TEXT NOT NULL,
                 subject TEXT NOT NULL,
-                received_date TEXT NOT NULL,
+                received_date TIMESTAMP NOT NULL,
                 message_body TEXT NOT NULL
             )
         """)

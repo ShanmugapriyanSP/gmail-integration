@@ -71,7 +71,7 @@ class GmailService:
 
         return email
 
-    def get_messages_by_label(self, label_id: str, limit: int = 5) -> None:
+    def get_messages_by_label(self, label_id: str, limit: int = 5) -> List[Email]:
         result = self._service.users().messages().list(userId='me', labelIds=[label_id], maxResults=limit).execute()
         messages = result.get('messages')
 
@@ -82,4 +82,6 @@ class GmailService:
             txt = self._service.users().messages().get(userId='me', id=msg['id'], format='full').execute()
 
             emails.append(self.parse_email(txt))
+
+        return emails
 

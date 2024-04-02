@@ -19,7 +19,7 @@ class OAuthService:
         self._credential_file = config_vars.credential_file
         self._token_file = config_vars.token_file
         self._scopes = config_vars.scopes
-        self._redirect_port_number = config_vars.redirect_port_number
+        self._redirect_port_number = config_vars.redirect_port
         self.__credentials = self.__authenticate()
 
     def __authenticate(self) -> Credentials:
