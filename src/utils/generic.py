@@ -1,3 +1,4 @@
+import json
 import re
 from datetime import datetime
 
@@ -19,6 +20,16 @@ class GenericUtils:
             return yaml.safe_load(config)
 
     @staticmethod
+    def load_json(json_file) -> dict:
+        """
+        Loads json file
+        :param json_file:
+        :return:
+        """
+        with open(json_file, 'r') as file:
+            return json.load(file)['rules']
+
+    @staticmethod
     def remove_extra_whitespaces(text) -> str:
         """
         Removes extra whitespaces and replaces newlines with '/n'
@@ -27,20 +38,28 @@ class GenericUtils:
         """
         # Remove extra whitespaces using a regular expression
         text = re.sub(r"\s+", " ", text)
-        # Replace newlines with '/n'
         text = text.replace("\n", "/n")
         return text
 
     @staticmethod
     def remove_timezone_info(date_string):
+        """
+
+        :param date_string:
+        :return:
+        """
         # Define a regular expression pattern to match timezone info
         pattern = r'\s*\((?:[A-Za-z]+)\)\s*'
-
         # Use re.sub() to remove timezone info from the date string
         return re.sub(pattern, '', date_string)
 
     @staticmethod
     def format_date(date_str):
+        """
+
+        :param date_str:
+        :return:
+        """
         # Parse the date string into a datetime object
         date_str = GenericUtils.remove_timezone_info(date_str)
         date_formats = [

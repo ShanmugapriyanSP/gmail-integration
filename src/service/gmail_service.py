@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 from google.api.service_pb2 import Service
 from googleapiclient.discovery import build
 
+from enums.email_header import EmailHeader
 from model.email import Email
 from service.oauth_service import OAuthService
 from utils.generic import GenericUtils
@@ -36,17 +37,20 @@ class GmailService:
 
         email = Email()
         try:
+            email.message_id = text['id']
             payload = text['payload']
             headers = payload['headers']
 
+            header_map = {
+                EmailHeader.SUBJECT.value: 'subject',
+                EmailHeader.FROM.value: 'sender',
+                EmailHeader.TO.value: 'to',
+                EmailHeader.RECEIVED_DATE.value: 'received_date'
+            }
             # Look for Subject and Sender Email in the headers
             for props in headers:
-                if props['name'] == 'Subject':
-                    email.subject = props['value']
-                if props['name'] == 'From':
-                    email.sender = props['value']
-                if props['name'] == 'Date':
-                    email.received_date = props['value']
+                if props['name'] in header_map.keys():
+                    setattr(email, header_map[props['name']], props['value'])
 
             # The Body of the message is in Encrypted format. So, we have to decode it.
             # Get the data and decode it with base 64 decoder.

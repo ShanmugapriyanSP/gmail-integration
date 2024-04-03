@@ -16,6 +16,7 @@ class Config:
     _scopes: List[str]
     _redirect_port: int
     _db_name: str
+    _db_table_name: str
     _db_host: str
     _db_port: str
     _db_user: str
@@ -39,7 +40,8 @@ class Config:
             cls._instance._redirect_port = config["google"]["redirect_port"]
 
             # Database properties
-            cls._instance._db_name = config["database"]["name"]
+            cls._instance._db_name = config["database"]["db_name"]
+            cls._instance._db_table_name = config["database"]["table_name"]
             cls._instance._db_host = config["database"]["host"]
             cls._instance._db_port = config["database"]["port"]
             cls._instance._db_user = config["database"]["user"]
@@ -73,6 +75,10 @@ class Config:
     @property
     def db_name(self):
         return self._db_name
+
+    @property
+    def db_table_name(self):
+        return self._db_table_name
 
     @property
     def db_host(self):

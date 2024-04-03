@@ -1,0 +1,40 @@
+{
+  "rules": [
+    {
+      "predicate": "All",
+      "conditions": [
+        {
+          "field": "From",
+          "predicate": "contains",
+          "value": "info@championbike.co.za"
+        },
+        {
+          "field": "Subject",
+          "predicate": "contains",
+          "value": "Launchpad"
+        }
+      ],
+      "actions": [
+        "Move to folder: Important"
+      ]
+    },
+    {
+      "predicate": "Any",
+      "conditions": [
+        {
+          "field": "To",
+          "predicate": "contains",
+          "value": "shanmugapriyan9696@gmail.com"
+        },
+        {
+          "field": "Subject",
+          "predicate": "contains",
+          "value": "Meeting"
+        }
+      ],
+      "actions": [
+        "Mark as read"
+      ]
+    }
+  ]
+}
