@@ -1,4 +1,6 @@
 import json
+import logging
+import os
 import re
 from datetime import datetime
 
@@ -8,6 +10,18 @@ DATE_FORMAT = "%a, %d %b %Y %H:%M:%S %z"
 
 
 class GenericUtils:
+
+    @staticmethod
+    def get_logger(name):
+        """
+
+        :param name:
+        :return:
+        """
+        logging.basicConfig(
+            level=os.getenv("LOG_LEVEL", "DEBUG")
+        )
+        return logging.getLogger(name)
 
     @staticmethod
     def load_yaml(config_file) -> dict:
@@ -27,7 +41,7 @@ class GenericUtils:
         :return:
         """
         with open(json_file, 'r') as file:
-            return json.load(file)['rules']
+            return json.load(file)
 
     @staticmethod
     def remove_extra_whitespaces(text) -> str:
@@ -73,4 +87,3 @@ class GenericUtils:
                 pass
 
         return None
-

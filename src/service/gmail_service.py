@@ -1,7 +1,8 @@
 import base64
 import re
 import traceback
-from typing import List
+from logging import Logger
+from typing import List, Dict, Tuple, Union
 
 from bs4 import BeautifulSoup
 from google.api.service_pb2 import Service
@@ -15,30 +16,30 @@ from utils.generic import GenericUtils
 
 class GmailService:
     _service: Service
+    _logger: Logger
+    MAX_BATCH_UPDATE: int = 1000
 
     def __init__(self, oauth: OAuthService):
         self._service = build('gmail', 'v1', credentials=oauth.credentials)
+        self._logger = GenericUtils.get_logger(self.__class__.__name__)
 
-    def get_label_id(self, search_label) -> str:
+    def get_all_labels(self) -> List[str]:
+        """
+        Returns all Gmail labels
+        :return:
+        """
         labels = self._service.users().labels().list(userId='me').execute()
-        label_id = None
+        return [label['id'] for label in labels['labels']]
 
-        for label in labels['labels']:
-            if label['name'] == search_label:
-                label_id = label['id']
-                break
-
-        return label_id
-
-    @staticmethod
-    def parse_email(text) -> Email:
+    def parse_email(self, response, label) -> Union[None, Email]:
         """
         """
 
         email = Email()
+        email.label = label
         try:
-            email.message_id = text['id']
-            payload = text['payload']
+            email.message_id = response['id']
+            payload = response['payload']
             headers = payload['headers']
 
             header_map = {
@@ -47,17 +48,16 @@ class GmailService:
                 EmailHeader.TO.value: 'to',
                 EmailHeader.RECEIVED_DATE.value: 'received_date'
             }
-            # Look for Subject and Sender Email in the headers
+            # Find Subject, Sender Email, To Email and the Received Date in the headers
             for props in headers:
                 if props['name'] in header_map.keys():
                     setattr(email, header_map[props['name']], props['value'])
 
-            # The Body of the message is in Encrypted format. So, we have to decode it.
-            # Get the data and decode it with base 64 decoder.
             parts = payload
             while re.search("multipart/*", parts['mimeType']):
                 parts = parts.get('parts')[0]
 
+            # The Body of the message is in Encrypted format. So, we have to decode it.
             data = parts['body']['data']
             data = data.replace("-", "+").replace("_", "/")
             decoded_data = base64.b64decode(data)
@@ -66,26 +66,64 @@ class GmailService:
             body = soup.get_text()
             email.message_body = GenericUtils.remove_extra_whitespaces(body)
 
-            # Extract message body (handles text/plain only for simplicity)
-            print(email)
+            self._logger.debug(email)
 
         except Exception as e:
-            print(f"Error parsing email: {e}")
-            traceback.format_exc()
+            self._logger.exception(f"Error parsing email: {e}")
+            raise
 
         return email
 
     def get_messages_by_label(self, label_id: str, limit: int = 5) -> List[Email]:
+        """
+        Fetch the Message Ids and retrieve each message content by the message ID
+        :param label_id:
+        :param limit:
+        :return:
+        """
         result = self._service.users().messages().list(userId='me', labelIds=[label_id], maxResults=limit).execute()
         messages = result.get('messages')
 
+        if not messages:
+            return []
+
         emails: List[Email] = []
-        # iterate through all the messages
         for msg in messages:
-            # Get the message from its id
-            txt = self._service.users().messages().get(userId='me', id=msg['id'], format='full').execute()
-
-            emails.append(self.parse_email(txt))
-
+            response = self._service.users().messages().get(userId='me', id=msg['id'], format='full').execute()
+            email = self.parse_email(response, label_id)
+            if email:
+                emails.append(email)
         return emails
 
+    @staticmethod
+    def batch_message_ids(message_ids, batch_size):
+        """
+        Generator function to yield batches of message IDs
+        :param message_ids:
+        :param batch_size:
+        :return:
+        """
+        for i in range(0, len(message_ids), batch_size):
+            yield message_ids[i:i + batch_size]
+
+    def batch_modify(self, message_ids: List[str], add_label_ids: List[str] = None, remove_label_ids: List[str] = None):
+        """
+
+        :param message_ids:
+        :param add_label_ids:
+        :param remove_label_ids:
+        :return:
+        """
+
+        if not message_ids:
+            return
+
+        request_body = {}
+        if add_label_ids and len(add_label_ids) > 0:
+            request_body["addLabelIds"] = add_label_ids
+        if remove_label_ids and len(remove_label_ids) > 0:
+            request_body["removeLabelIds"] = remove_label_ids
+
+        for msg_ids in self.batch_message_ids(message_ids, self.MAX_BATCH_UPDATE):
+            request_body["ids"] = msg_ids
+            return self._service.users().messages().batchModify(userId='me', body=request_body).execute()

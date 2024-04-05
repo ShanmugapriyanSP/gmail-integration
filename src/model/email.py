@@ -3,12 +3,23 @@ from utils.generic import GenericUtils
 
 class Email:
 
-    _message_id: int
-    _sender: str
-    _to: str
-    _subject: str
-    _received_date: str
-    _message_body: str
+    _message_id: str = None
+    _sender: str = None
+    _to: str = None
+    _subject: str = None
+    _received_date: str = None
+    _message_body: str = None
+    _label: str = None
+
+    def __init__(self, message_id: str = None, label: str = None, sender: str = None, to: str = None,
+                 subject: str = None, received_date: str = None, message_body: str = None):
+        self._message_id = message_id
+        self._label = label
+        self._sender = sender
+        self._to = to
+        self._subject = subject
+        self._received_date = received_date
+        self._message_body = message_body
 
     @property
     def message_id(self):
@@ -58,6 +69,15 @@ class Email:
     def message_body(self, message_body):
         self._message_body = message_body
 
+    @property
+    def label(self):
+        return self._label
+
+    @label.setter
+    def label(self, label):
+        self._label = str(label)
+
     def __str__(self):
         return (f"{'*' * 50}\nFrom: {self.sender}\nTo: {self.to}\nSubject: {self.subject}\n"
-                f"Received Date: {self.received_date}\nMessage Body: {self.message_body}\n{'*' * 50}")
+                f"Received Date: {self.received_date}\nLabel: {self.label}\n"
+                f"Message Body: {self.message_body}\n{'*' * 50}")

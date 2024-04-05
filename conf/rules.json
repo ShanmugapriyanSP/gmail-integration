@@ -6,35 +6,31 @@
         {
           "field": "From",
           "predicate": "contains",
-          "value": "info@championbike.co.za"
+          "value": "U.S. Polo Assn. India"
         },
         {
           "field": "Subject",
           "predicate": "contains",
-          "value": "Launchpad"
+          "value": "Upto 40% off on luxury handbags"
         }
       ],
-      "actions": [
-        "Move to folder: Important"
-      ]
+      "actions": {
+        "Move Message": "IMPORTANT",
+        "Mark as read": true
+      }
     },
     {
       "predicate": "Any",
       "conditions": [
-        {
-          "field": "To",
-          "predicate": "contains",
-          "value": "shanmugapriyan9696@gmail.com"
-        },
         {
           "field": "Subject",
           "predicate": "contains",
           "value": "Meeting"
         }
       ],
-      "actions": [
-        "Mark as read"
-      ]
+      "actions": {
+        "Mark as Read": false
+      }
     }
   ]
 }

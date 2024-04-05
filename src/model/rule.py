@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict, Union
 
 from model.condition import Condition
 
@@ -7,7 +7,7 @@ class Rule:
 
     _predicate: str
     _conditions: List[Condition]
-    _actions: List[str]
+    _actions: Dict[str, Union[str, bool]]
 
     def __init__(self, rule: dict):
         self._predicate = rule['predicate']
@@ -23,5 +23,5 @@ class Rule:
         return self._conditions
 
     @property
-    def actions(self) -> List[str]:
+    def actions(self) -> Dict[str, Union[str, bool]]:
         return self._actions

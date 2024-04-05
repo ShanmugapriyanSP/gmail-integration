@@ -10,15 +10,17 @@ class RulePredicate(Enum):
     ALL = ('All', 'AND')
     ANY = ('Any', 'OR')
 
-    def get_predicate(self) -> str:
+    @property
+    def predicate(self) -> str:
         return str(self.value[0])
 
-    def get_sql_condition(self) -> str:
+    @property
+    def sql_condition(self) -> str:
         return str(self.value[1])
 
     @staticmethod
     def from_str(predicate: str):
-        result = list(filter(lambda rule_predicate: rule_predicate.get_predicate() == predicate.capitalize(),
+        result = list(filter(lambda rule_predicate: rule_predicate.predicate == predicate.capitalize(),
                              RulePredicate))
         if len(result) == 1:
             return result[0]

@@ -1,6 +1,6 @@
 # Generic
-search_label: SPAM
 max_email_count: 100
+rules_file: "conf/rules.json"
 
 # Google specific
 google:
@@ -8,9 +8,9 @@ google:
   credential_file: "conf/credentials.json"
   redirect_port: 53669
   scopes:
-    - https://www.googleapis.com/auth/gmail.readonly
+    - https://www.googleapis.com/auth/gmail.modify
 
-# database
+# data
 database:
   db_name: postgres
   table_name: emails

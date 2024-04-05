@@ -9,8 +9,8 @@ CONFIG_FILE = str(Path(__file__).parent / "../conf/config.yml")
 
 class Config:
     _instance = None
-    _search_label: str
     _max_email_count: int
+    _rules_file: str
     _credential_file: str
     _token_file: str
     _scopes: List[str]
@@ -26,13 +26,12 @@ class Config:
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(Config, cls).__new__(cls)
-            config = GenericUtils.load_yaml(CONFIG_FILE)
-            # Generic
-            cls._instance._search_label = config["search_label"]
-            cls._instance._max_email_count = config["max_email_count"]
-
             # Get the parent directory of the config file
             config_parent_dir = Path(CONFIG_FILE).parent
+            config = GenericUtils.load_yaml(CONFIG_FILE)
+            # Generic
+            cls._instance._max_email_count = config["max_email_count"]
+            cls._instance._rules_file = (config_parent_dir / ".." / config['rules_file']).resolve()
             # Google specific properties
             cls._instance._credential_file = (config_parent_dir / ".." / config['google']['credential_file']).resolve()
             cls._instance._token_file = (config_parent_dir / ".." / config['google']['token_file']).resolve()
@@ -49,12 +48,12 @@ class Config:
         return cls._instance
 
     @property
-    def search_label(self):
-        return self._search_label
-
-    @property
     def max_email_count(self):
         return self._max_email_count
+
+    @property
+    def rules_file(self):
+        return self._rules_file
 
     @property
     def credential_file(self):

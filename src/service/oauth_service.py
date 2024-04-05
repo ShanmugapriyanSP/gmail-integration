@@ -38,9 +38,7 @@ class OAuthService:
 
             if credentials and credentials.expired and credentials.refresh_token:
                 credentials.refresh(Request())
-
             else:
-
                 flow = InstalledAppFlow.from_client_secrets_file(
                     self._credential_file, self._scopes
                 )

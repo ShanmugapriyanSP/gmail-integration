@@ -1,3 +1,5 @@
+from typing import List
+
 import psycopg2
 
 from config import Config
@@ -5,7 +7,7 @@ from enums.rule_column import RuleColumn
 from model.email import Email
 
 
-class PostgreSqlManager:
+class SqlClient:
     _table_name: str
 
     def __init__(self, config_vars: Config):
@@ -27,13 +29,14 @@ class PostgreSqlManager:
         """
         self.cursor.execute(f"""
             CREATE TABLE IF NOT EXISTS {self._table_name} (
-                {RuleColumn.ID.column()} SERIAL PRIMARY KEY,
-                {RuleColumn.MESSAGE_ID.column()} TEXT NOT NULL,
-                {RuleColumn.FROM.column()} TEXT NOT NULL, 
-                {RuleColumn.TO.column()} TEXT NOT NULL, 
-                {RuleColumn.SUBJECT.column()} TEXT NOT NULL, 
-                {RuleColumn.RECEIVED_DATE.column()} TIMESTAMP NOT NULL,
-                {RuleColumn.MESSAGE.column()} TEXT NOT NULL
+                {RuleColumn.ID.column} SERIAL PRIMARY KEY,
+                {RuleColumn.MESSAGE_ID.column} TEXT NOT NULL,
+                {RuleColumn.FROM.column} TEXT NOT NULL, 
+                {RuleColumn.TO.column} TEXT NULL, 
+                {RuleColumn.SUBJECT.column} TEXT NULL, 
+                {RuleColumn.RECEIVED_DATE.column} TIMESTAMP NULL,
+                {RuleColumn.LABEL.column} TEXT NULL,
+                {RuleColumn.MESSAGE.column} TEXT NULL
             )
         """)
         self.connection.commit()
@@ -44,28 +47,30 @@ class PostgreSqlManager:
         :param emails:
         :return:
         """
-        email_data = [(email.message_id, email.sender, email.to, email.subject, email.received_date, email.message_body)
-                      for email in emails]
+        email_data = [(email.message_id, email.sender, email.to, email.subject, email.received_date, email.label,
+                       email.message_body) for email in emails]
         self.cursor.executemany(f"""
             INSERT INTO {self._table_name} (
-                {RuleColumn.MESSAGE_ID.column()},
-                {RuleColumn.FROM.column()},
-                {RuleColumn.TO.column()}, 
-                {RuleColumn.SUBJECT.column()},
-                {RuleColumn.RECEIVED_DATE.column()},
-                {RuleColumn.MESSAGE.column()}
-            ) VALUES (%s, %s, %s, %s, %s, %s)
+                {RuleColumn.MESSAGE_ID.column},
+                {RuleColumn.FROM.column},
+                {RuleColumn.TO.column}, 
+                {RuleColumn.SUBJECT.column},
+                {RuleColumn.RECEIVED_DATE.column},
+                {RuleColumn.LABEL.column},
+                {RuleColumn.MESSAGE.column}
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s)
             """, email_data)
         self.connection.commit()
 
-    def fetch_emails(self, query: str):
+    def fetch_emails(self, query: str) -> List[Email]:
         """
 
         :param query:
         :return:
         """
         self.cursor.execute(query)
-        return self.cursor.fetchall()
+        result = self.cursor.fetchall()
+        return [Email(*values) for values in result]
 
     def close_connection(self):
         """
