@@ -142,7 +142,7 @@ class EmailRuleProcessor:
 
     def process(self):
         """
-        * Parse the rules
+        * Parse the rules json
         * Apply action based on the rules
         :return:
         """
