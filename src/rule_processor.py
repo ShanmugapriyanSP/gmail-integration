@@ -45,9 +45,16 @@ class EmailRuleProcessor:
         condition_sql = []
         for cond in conditions:
             sql_operator = self.get_sql_condition(cond.predicate)
-            value = f"'%{cond.value}%'" if sql_operator == "LIKE" else f"'{cond.value}'"
+            match sql_operator:
+                case RulePredicate.CONTAINS.sql_condition:
+                    value = f"'%{cond.value}%'"
+                case RulePredicate.GREATER_THAN.sql_condition | RulePredicate.LESS_THAN.sql_condition:
+                    value = f"CURRENT_TIMESTAMP - INTERVAL '{cond.value}'"
+                case _:
+                    value = cond.value
             condition_sql.append(f"{self.get_column(cond.field)} {sql_operator} {value}")
 
+        # Construct the conditions
         if predicate == RulePredicate.ALL.predicate:
             sql_query += f' {RulePredicate.ALL.sql_condition} '.join(condition_sql)
         elif predicate == RulePredicate.ANY.predicate:
@@ -57,34 +64,46 @@ class EmailRuleProcessor:
 
         return sql_query
 
+    def _mark_message(self, action_value, emails: List[Email]):
+        """
+
+        :param action_value:
+        :param emails:
+        :return:
+        """
+        add_label_ids, remove_label_ids = [], []
+        remove_label_ids.append("UNREAD") if action_value else add_label_ids.append("UNREAD")
+        msg_ids = [email.message_id for email in emails]
+        self._gmail_service.batch_modify(msg_ids, add_label_ids, remove_label_ids)
+
+    def _move_message(self, action_value, emails: List[Email]) -> None:
+        """
+
+        :param action_value:
+        :param emails:
+        :return:
+        """
+        add_label_ids, remove_label_ids = [], []
+        add_label_ids.append(action_value)
+        msg_ids = []
+        for email in emails:
+            if email.label != action_value:
+                remove_label_ids.append(email.label)
+                msg_ids.append(email.message_id)
+        self._gmail_service.batch_modify(msg_ids, add_label_ids, remove_label_ids)
+
     def apply_actions(self):
-        resp = None
-
         for rule in self._rules:
-
             query = self.prepare_query(rule.predicate, rule.conditions)
             # Fetch emails based on conditions
             emails: List[Email] = self._sql_client.fetch_emails(query)
-
             # Apply actions to fetched emails
-            remove_label_ids, add_label_ids = [], []
             for action, action_value in rule.actions.items():
-
                 match action.lower():
-
                     case RuleAction.MARK_AS_READ.value:
-                        remove_label_ids.append("UNREAD") if action_value else add_label_ids.append("UNREAD")
-                        msg_ids = [email.message_id for email in emails]
-                        self._gmail_service.batch_modify(msg_ids, add_label_ids, remove_label_ids)
-
+                        self._mark_message(action_value, emails)
                     case RuleAction.MOVE_MESSAGE.value:
-                        add_label_ids.append(action_value)
-                        msg_ids = []
-                        for email in emails:
-                            if email.label != action_value:
-                                remove_label_ids.append(email.label)
-                                msg_ids.append(email.message_id)
-                        self._gmail_service.batch_modify(msg_ids, add_label_ids, remove_label_ids)
+                        self._move_message(action_value, emails)
 
     def process(self):
         self.parse_rules()
