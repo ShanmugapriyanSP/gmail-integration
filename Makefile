@@ -15,3 +15,9 @@ install:
 test:
 	@coverage run -m unittest discover && coverage report --omit="tests/*"
 	@coverage html --omit="tests/*"
+
+run_fetch_emails:
+	@python src/fetch_emails.py
+
+run_email_rule_processor:
+	@python src/email_rule_processor.py
