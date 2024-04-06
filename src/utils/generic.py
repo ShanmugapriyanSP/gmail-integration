@@ -58,7 +58,7 @@ class GenericUtils:
     @staticmethod
     def remove_timezone_info(date_string):
         """
-
+        Uses regex to remove timezone info
         :param date_string:
         :return:
         """
@@ -70,7 +70,7 @@ class GenericUtils:
     @staticmethod
     def format_date(date_str):
         """
-
+        Parses the date and returns in a required format
         :param date_str:
         :return:
         """

@@ -15,4 +15,3 @@ install:
 test:
 	@coverage run -m unittest discover && coverage report --omit="tests/*"
 	@coverage html --omit="tests/*"
-	@echo "Coverage Report stored in htmlcov/index.html"

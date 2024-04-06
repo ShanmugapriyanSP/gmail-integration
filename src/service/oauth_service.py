@@ -15,7 +15,8 @@ class OAuthService:
     _redirect_port_number: int
     __credentials: Credentials
 
-    def __init__(self, config_vars: Config):
+    def __init__(self):
+        config_vars = Config()
         self._credential_file = config_vars.credential_file
         self._token_file = config_vars.token_file
         self._scopes = config_vars.scopes
@@ -24,8 +25,8 @@ class OAuthService:
 
     def __authenticate(self) -> Credentials:
         """
-        Load credentials from the local token file if exists otherwise
-        get consent from user using credential file which will create
+        Loads credentials from the local token file if exists otherwise
+        get consent from user using the credential file which will create
         a local token file as cache
         :return:
         """

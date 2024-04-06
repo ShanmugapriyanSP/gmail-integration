@@ -2,7 +2,11 @@ from enum import Enum
 
 
 class RulePredicate(Enum):
+    """
+    Enum Mapper class to match Predicate provided in the rules JSON with SQL operator/condition
+    """
     CONTAINS = ('contains', 'LIKE')
+    DOES_NOT_CONTAINS = ('does not contain', 'NOT LIKE')
     EQUALS = ('equals', '=')
     DOES_NOT_EQUAL = ('does not equal', '!=')
     LESS_THAN = ('less than', '<')

@@ -2,6 +2,9 @@ from enum import Enum
 
 
 class RuleColumn(Enum):
+    """
+    Enum Mapper class to match the Field provided in the rules JSON with database Column
+    """
     ID = ('', 'id')
     MESSAGE_ID = ('', 'message_id')
     FROM = ('from', 'sender')

@@ -1,15 +1,17 @@
+from typing import Optional
+
 from utils.generic import GenericUtils
 
 
 class Email:
 
-    _message_id: str = None
-    _sender: str = None
-    _to: str = None
-    _subject: str = None
-    _received_date: str = None
-    _message_body: str = None
-    _label: str = None
+    _message_id: Optional[str] = None
+    _sender: Optional[str] = None
+    _to: Optional[str] = None
+    _subject: Optional[str] = None
+    _received_date: Optional[str] = None
+    _message_body: Optional[str] = None
+    _label: Optional[str] = None
 
     def __init__(self, message_id: str = None, label: str = None, sender: str = None, to: str = None,
                  subject: str = None, received_date: str = None, message_body: str = None):
@@ -78,6 +80,11 @@ class Email:
         self._label = str(label)
 
     def __str__(self):
-        return (f"{'*' * 50}\nFrom: {self.sender}\nTo: {self.to}\nSubject: {self.subject}\n"
-                f"Received Date: {self.received_date}\nLabel: {self.label}\n"
-                f"Message Body: {self.message_body}\n{'*' * 50}")
+        return (f"{'*' * 50}\n"
+                f"From: {self.sender}\n"
+                f"To: {self.to}\n"
+                f"Subject: {self.subject}\n"
+                f"Received Date: {self.received_date}\n"
+                f"Label: {self.label}\n"
+                f"Message Body: {self.message_body}\n"
+                f"{'*' * 50}")

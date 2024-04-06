@@ -4,13 +4,17 @@ import psycopg2
 
 from config import Config
 from enums.rule_column import RuleColumn
-from model.email import Email
+from objects.email import Email
 
 
 class SqlClient:
+    """
+    SQL client to interact with PostgreSql database
+    """
     _table_name: str
 
-    def __init__(self, config_vars: Config):
+    def __init__(self):
+        config_vars = Config()
         self._table_name = config_vars.db_table_name
         self.connection = psycopg2.connect(
             host=config_vars.db_host,
@@ -24,7 +28,7 @@ class SqlClient:
 
     def create_table(self):
         """
-
+        Create table if not exists already
         :return:
         """
         self.cursor.execute(f"""
@@ -43,7 +47,7 @@ class SqlClient:
 
     def insert_emails(self, emails: list[Email]):
         """
-
+        Inserts list of emails to emails table
         :param emails:
         :return:
         """
@@ -64,9 +68,9 @@ class SqlClient:
 
     def fetch_emails(self, query: str) -> List[Email]:
         """
-
+        Fetches the emails for the provided query
         :param query:
-        :return:
+        :return: list of Email object
         """
         self.cursor.execute(query)
         result = self.cursor.fetchall()
@@ -74,7 +78,7 @@ class SqlClient:
 
     def close_connection(self):
         """
-
+        Safely close the db connection
         :return:
         """
         self.cursor.close()
