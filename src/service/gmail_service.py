@@ -1,13 +1,9 @@
-import base64
-import re
 from logging import Logger
-from typing import List, Union, Dict
+from typing import List, Dict
 
-from bs4 import BeautifulSoup
 from google.api.service_pb2 import Service
 from googleapiclient.discovery import build
 
-from enums.email_header import EmailHeader
 from objects.batch_modify_request import BatchModifyRequest
 from objects.email import Email
 from objects.label import Label

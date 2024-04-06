@@ -14,7 +14,7 @@ class GenericUtils:
     @staticmethod
     def get_logger(name):
         """
-
+        Initialises  logger
         :param name:
         :return:
         """
