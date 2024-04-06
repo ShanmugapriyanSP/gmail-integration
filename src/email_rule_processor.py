@@ -1,4 +1,3 @@
-from itertools import chain
 from typing import List
 
 from config import Config
@@ -39,28 +38,36 @@ class EmailRuleProcessor:
     def get_sql_condition(predicate: str) -> str:
         return RulePredicate.from_str(predicate).sql_condition
 
-    def prepare_query(self, predicate: str, conditions: List[Condition]) -> str:
+    @staticmethod
+    def prepare_query(predicate: str, conditions: List[Condition]) -> str:
         sql_query = (f"SELECT {RuleColumn.MESSAGE_ID.column}, {RuleColumn.LABEL.column} "
                      f"from {Config().db_table_name} WHERE ")
         condition_sql = []
         for cond in conditions:
-            sql_operator = self.get_sql_condition(cond.predicate)
+            sql_operator = EmailRuleProcessor.get_sql_condition(cond.predicate)
             match sql_operator:
+
                 case RulePredicate.CONTAINS.sql_condition:
                     value = f"'%{cond.value}%'"
+                    column = EmailRuleProcessor.get_column(cond.field)
+
                 case RulePredicate.GREATER_THAN.sql_condition | RulePredicate.LESS_THAN.sql_condition:
-                    value = f"CURRENT_TIMESTAMP - INTERVAL '{cond.value}'"
+                    value = f"INTERVAL '{cond.value}'"
+                    column = f"AGE(CURRENT_TIMESTAMP, {EmailRuleProcessor.get_column(cond.field)})"
+
                 case _:
-                    value = cond.value
-            condition_sql.append(f"{self.get_column(cond.field)} {sql_operator} {value}")
+                    value = f"'{cond.value}'"
+                    column = EmailRuleProcessor.get_column(cond.field)
+
+            condition_sql.append(f"{column} {sql_operator} {value}")
 
         # Construct the conditions
-        if predicate == RulePredicate.ALL.predicate:
+        if predicate.lower() == RulePredicate.ALL.predicate:
             sql_query += f' {RulePredicate.ALL.sql_condition} '.join(condition_sql)
-        elif predicate == RulePredicate.ANY.predicate:
+        elif predicate.lower() == RulePredicate.ANY.predicate:
             sql_query += f' {RulePredicate.ANY.sql_condition} '.join(condition_sql)
         else:
-            raise NotImplementedError(f"Predicate {predicate} is not defined!!")
+            raise NotImplementedError(f"Predicate {predicate.lower()} is not defined!!")
 
         return sql_query
 

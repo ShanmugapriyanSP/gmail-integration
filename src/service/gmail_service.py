@@ -10,6 +10,7 @@ from googleapiclient.discovery import build
 
 from enums.email_header import EmailHeader
 from model.email import Email
+from model.label import Label
 from service.oauth_service import OAuthService
 from utils.generic import GenericUtils
 
@@ -23,13 +24,13 @@ class GmailService:
         self._service = build('gmail', 'v1', credentials=oauth.credentials)
         self._logger = GenericUtils.get_logger(self.__class__.__name__)
 
-    def get_all_labels(self) -> List[str]:
+    def get_all_labels(self) -> List[Label]:
         """
         Returns all Gmail labels
         :return:
         """
         labels = self._service.users().labels().list(userId='me').execute()
-        return [label['id'] for label in labels['labels']]
+        return [Label(label['id'], label['name']) for label in labels['labels']]
 
     def parse_email(self, response, label) -> Union[None, Email]:
         """
@@ -74,14 +75,14 @@ class GmailService:
 
         return email
 
-    def get_messages_by_label(self, label_id: str, limit: int = 5) -> List[Email]:
+    def get_messages_by_label(self, label: Label, limit: int = 5) -> List[Email]:
         """
         Fetch the Message Ids and retrieve each message content by the message ID
-        :param label_id:
+        :param label:
         :param limit:
         :return:
         """
-        result = self._service.users().messages().list(userId='me', labelIds=[label_id], maxResults=limit).execute()
+        result = self._service.users().messages().list(userId='me', labelIds=[label.id], maxResults=limit).execute()
         messages = result.get('messages')
 
         if not messages:
@@ -90,7 +91,7 @@ class GmailService:
         emails: List[Email] = []
         for msg in messages:
             response = self._service.users().messages().get(userId='me', id=msg['id'], format='full').execute()
-            email = self.parse_email(response, label_id)
+            email = self.parse_email(response, label.name)
             if email:
                 emails.append(email)
         return emails

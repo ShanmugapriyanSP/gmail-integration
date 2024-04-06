@@ -63,7 +63,7 @@ class GenericUtils:
         :return:
         """
         # Define a regular expression pattern to match timezone info
-        pattern = r'\s*\((?:[A-Za-z]+)\)\s*'
+        pattern = r'\s*\([A-Za-z]+\)\s*'
         # Use re.sub() to remove timezone info from the date string
         return re.sub(pattern, '', date_string)
 

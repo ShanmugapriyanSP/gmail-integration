@@ -2,13 +2,13 @@ from enum import Enum
 
 
 class RulePredicate(Enum):
-    CONTAINS = ('Contains', 'LIKE')
-    EQUALS = ('Equals', '=')
-    DOES_NOT_EQUAL = ('Does not equal', '!=')
-    LESS_THAN = ('Less than', '<')
-    GREATER_THAN = ('Greater than', '>')
-    ALL = ('All', 'AND')
-    ANY = ('Any', 'OR')
+    CONTAINS = ('contains', 'LIKE')
+    EQUALS = ('equals', '=')
+    DOES_NOT_EQUAL = ('does not equal', '!=')
+    LESS_THAN = ('less than', '<')
+    GREATER_THAN = ('greater than', '>')
+    ALL = ('all', 'AND')
+    ANY = ('any', 'OR')
 
     @property
     def predicate(self) -> str:
@@ -20,7 +20,7 @@ class RulePredicate(Enum):
 
     @staticmethod
     def from_str(predicate: str):
-        result = list(filter(lambda rule_predicate: rule_predicate.predicate == predicate.capitalize(),
+        result = list(filter(lambda rule_predicate: rule_predicate.predicate == predicate.lower(),
                              RulePredicate))
         if len(result) == 1:
             return result[0]

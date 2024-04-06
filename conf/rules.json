@@ -12,6 +12,11 @@
           "field": "Subject",
           "predicate": "contains",
           "value": "Upto 40% off on luxury handbags"
+        },
+        {
+          "field": "Date Received",
+          "predicate": "less than",
+          "value": "2 months"
         }
       ],
       "actions": {
@@ -24,8 +29,18 @@
       "conditions": [
         {
           "field": "Subject",
-          "predicate": "contains",
+          "predicate": "does not equal",
           "value": "Meeting"
+        },
+        {
+          "field": "Date received",
+          "predicate": "greater than",
+          "value": "2 years"
+        },
+        {
+          "field": "To",
+          "predicate": "equal",
+          "value": "shanmugapriyan9696@gmail.com"
         }
       ],
       "actions": {

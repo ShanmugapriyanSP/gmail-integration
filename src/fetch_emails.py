@@ -1,12 +1,13 @@
-import traceback
+
 from logging import Logger
 from typing import List
 
 from config import Config
 from data.sql_client import SqlClient
 from model.email import Email
-from service.oauth_service import OAuthService
+from model.label import Label
 from service.gmail_service import GmailService
+from service.oauth_service import OAuthService
 from utils.generic import GenericUtils
 
 
@@ -28,17 +29,17 @@ class FetchEmails:
         """
         * Fetch all Gmail labels
         * For each Gmail label, fetch up to the configured max email count
-        * Insert the emails into the data
+        * Insert the emails into the database
         :return:
         """
         try:
-            labels: List[str] = self._gmail_service.get_all_labels()
-            for label_id in labels:
+            labels: List[Label] = self._gmail_service.get_all_labels()
+            for label in labels:
                 emails: List[Email] = self._gmail_service.get_messages_by_label(
-                    label_id=label_id,
+                    label=label,
                     limit=self._config_vars.max_email_count
                 )
-                self._logger.info(f"Fetched {len(emails) if emails else 0} Emails for Label - {label_id}")
+                self._logger.info(f"Fetched {len(emails) if emails else 0} Emails for Label - {label.name}")
                 if emails:
                     self._sql_client.insert_emails(emails)
         except Exception as ex:

@@ -13,6 +13,6 @@ install:
 	@pip install -r requirements-test.txt
 
 test:
-	PYTHONPATH=$(shell pwd)/src:$(shell pwd)/tests/ coverage run -m discover $(PYTHONPATH) && coverage report --omit="tests/*,venv/*"
-	@coverage html --omit="tests/*,venv/*"
+	@coverage run -m unittest discover && coverage report --omit="tests/*"
+	@coverage html --omit="tests/*"
 	@echo "Coverage Report stored in htmlcov/index.html"
