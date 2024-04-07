@@ -38,7 +38,8 @@ class TestEmailRuleProcessor(TestCase):
             call.fetch_emails(
                 "SELECT message_id, label FROM emails WHERE receiver != 'shanmugapriyan9696@gmail.com' OR "
                 "subject = 'Re: WES Verification - 11-CS-045'"
-            )
+            ),
+            call.close_connection()
         ]
         # Verify calls to Gmail Service
         assert self.gmail_service.method_calls == [
