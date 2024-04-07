@@ -149,8 +149,13 @@ class EmailRuleProcessor:
         * Apply action based on the rules
         :return:
         """
-        self.parse_rules()
-        self.apply_actions()
+        try:
+            self.parse_rules()
+            self.apply_actions()
+        except Exception as ex:
+            self._logger.exception(ex)
+        finally:
+            self._sql_client.close_connection()
 
 
 if __name__ == '__main__':
