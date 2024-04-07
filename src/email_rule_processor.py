@@ -140,6 +140,9 @@ class EmailRuleProcessor:
                     case RuleAction.MOVE_MESSAGE.value:
                         self._move_message(action_value, emails)
 
+                    case _:
+                        raise NotImplementedError(f"Action {action.lower()} is not defined!!")
+
     def process(self):
         """
         * Parse the rules json
