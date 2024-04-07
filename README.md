@@ -12,7 +12,7 @@ for setting up the virtual environment and running the provided scripts using a 
 * `requirements-test.txt`: Lists test dependencies.
 
 ## Pre-requisites
-Make sure you have `miniconda`, `make` and `PostgreSQL` (if you are using local server) installed on your system. 
+Make sure you have `miniconda`, `make` and `PostgreSQL` (if you are using local server) installed on your system.  Python 3.10 or above is needed.
 
 ## Setup
 
