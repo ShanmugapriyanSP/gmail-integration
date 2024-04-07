@@ -37,7 +37,7 @@ If you are using Pycharm, right click on the directory and then choose `Mark Dir
 * Follow the steps mentioned in [Setting up OAuth 2.0](https://support.google.com/googleapi/answer/6158849?hl=en) 
 page to generate the client secret and store the json file as `credentials.json` under `conf` directory.
 * Modify the script configurable parameters as per your need which is located in `conf/config.yml`.
-* If you are using local PostgreSQL server, ensure the server is running.
+* If you are using local PostgreSQL server, ensure the server is running.  Please store the DB password in the environment variable `POSTGRESQL_DB_PASSWORD`.
 
 ### Fetch Emails
 To run the fetch emails script, execute the following command.
