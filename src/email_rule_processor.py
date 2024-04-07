@@ -154,6 +154,7 @@ class EmailRuleProcessor:
             self.apply_actions()
         except Exception as ex:
             self._logger.exception(ex)
+            raise
         finally:
             self._sql_client.close_connection()
 
